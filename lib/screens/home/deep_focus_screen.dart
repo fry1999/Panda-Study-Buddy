@@ -98,7 +98,7 @@ class DeepFocusScreen extends ConsumerWidget {
               // Bamboo counter
               BambooCounter(count: bambooCount),
               
-              
+              const SizedBox(height: 18),
               // Partner status (if connected)
               if (partnerStatus != null) ...[
                 PartnerStatusCard(partner: partnerStatus),

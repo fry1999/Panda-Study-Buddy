@@ -49,6 +49,7 @@ class UserRepository {
     String? id,
     String? name,
     String? email,
+    String? photoUrl,
   }) async {
     User? currentUser = getCurrentUser();
     
@@ -59,6 +60,7 @@ class UserRepository {
         name: name ?? 'User',
         email: email ?? '',
         createdAt: DateTime.now(),
+        photoUrl: photoUrl,
       );
       await saveUser(currentUser);
       await setCurrentUserId(currentUser.id);
@@ -142,4 +144,3 @@ class UserRepository {
     return getCurrentUserId() != null;
   }
 }
-

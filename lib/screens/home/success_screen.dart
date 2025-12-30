@@ -43,7 +43,6 @@ class SuccessScreen extends ConsumerWidget {
           padding: const EdgeInsets.all(24.0),
           child: Column(
             children: [
-              const Spacer(),
               
               // Happy panda with bamboo
               Container(
@@ -155,7 +154,7 @@ class SuccessScreen extends ConsumerWidget {
                     color: AppColors.white,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: AppColors.partnerBlue.withOpacity(0.3),
+                      color: AppColors.partnerBlue.withValues(alpha: 0.3),
                       width: 2,
                     ),
                   ),
@@ -163,7 +162,7 @@ class SuccessScreen extends ConsumerWidget {
                     children: [
                       CircleAvatar(
                         radius: 24,
-                        backgroundColor: AppColors.partnerBlue.withOpacity(0.2),
+                        backgroundColor: AppColors.partnerBlue.withValues(alpha: 0.2),
                         child: Text(
                           partnerStatus.partnerName[0],
                           style: AppTextStyles.titleLarge,

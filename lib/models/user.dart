@@ -34,6 +34,9 @@ class User extends HiveObject {
   @HiveField(9)
   String? avatarUrl;
 
+  @HiveField(10)
+  String? photoUrl;
+
   User({
     required this.id,
     required this.name,
@@ -45,6 +48,7 @@ class User extends HiveObject {
     required this.createdAt,
     this.lastSessionDate,
     this.avatarUrl,
+    this.photoUrl,
   });
   
   /// Check if user has a partner
@@ -76,6 +80,7 @@ class User extends HiveObject {
       name: 'Guest',
       email: '',
       createdAt: DateTime.now(),
+      photoUrl: '',
     );
   }
   

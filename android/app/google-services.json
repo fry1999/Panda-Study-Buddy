@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "916035525008",
+    "project_id": "buddy-5c0dc",
+    "storage_bucket": "buddy-5c0dc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:916035525008:android:916d0730c0599cc30f3b15",
+        "android_client_info": {
+          "package_name": "com.annhan.buddy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "916035525008-f3f8lem9qlf47dvfqv3qr2lu3rcukt5k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.annhan.buddy",
+            "certificate_hash": "00eeceac568b313d36c533cc192f7c7d9fd5c098"
+          }
+        },
+        {
+          "client_id": "916035525008-uffll529a652f9cs506grddhnvb59bcj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBAirL85-o3u7hoIYS1D3W2NuIuzE1Tt28"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "916035525008-uffll529a652f9cs506grddhnvb59bcj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

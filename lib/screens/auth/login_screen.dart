@@ -75,8 +75,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 20),
-                
                 // Title
                 Text(
                   'Welcome Back!',
@@ -95,22 +93,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 // Panda
                 Center(
                   child: Container(
-                    width: 120,
-                    height: 120,
+                    width: 200,
+                    height: 200,
                     decoration: BoxDecoration(
                       color: AppColors.lightGreen,
                       borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: AppColors.primary)
                     ),
-                    child: const Center(
-                      child: Text(
-                        '🐼',
-                        style: TextStyle(fontSize: 64),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(24),
+                      child: Image.asset(
+                        'assets/images/welcome_panda.jpg',
                       ),
-                    ),
+                    )
                   ),
                 ),
                 
-                const SizedBox(height: 48),
+                const SizedBox(height: 24),
                 
                 // Email field
                 TextFormField(
@@ -164,7 +163,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   },
                 ),
                 
-                const SizedBox(height: 24),
+                const SizedBox(height: 12),
                 
                 // Forgot password link
                 Align(
@@ -187,7 +186,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                 ),
                 
-                const SizedBox(height: 24),
+                const SizedBox(height: 12),
                 
                 // Login button
                 CustomButton(
@@ -195,6 +194,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   onPressed: _handleLogin,
                   isLoading: _isLoading,
                 ),
+
+                const SizedBox(height: 12),
+
+                _buildLoginInWidthGoogle(),
                 
                 const SizedBox(height: 24),
                 
@@ -233,6 +236,39 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
       ),
     );
+  }
+
+  Widget _buildLoginInWidthGoogle() {
+    return ElevatedButton.icon(
+      onPressed: () {
+        // TODO: Implement login with Google
+        _handleLoginWithGoogle();
+      },
+      icon: const Icon(Icons.login),
+      label: const Text('Login with Google'),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black87,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      )
+    );
+  }
+
+  Future<void> _handleLoginWithGoogle() async {
+    final authNotifier = ref.read(authProvider.notifier);
+    final success = await authNotifier.signInWithGoogle();
+
+    if (success && mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen())
+      );
+    } else {
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Đăng nhập thất bại')),
+      );
+    }
   }
 }
 
