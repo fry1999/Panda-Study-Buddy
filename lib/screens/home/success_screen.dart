@@ -41,204 +41,197 @@ class SuccessScreen extends ConsumerWidget {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
-          child: Column(
-            children: [
-              
-              // Happy panda with bamboo
-              Container(
-                width: 300,
-                height: 300,
-                decoration: BoxDecoration(
-                  color: AppColors.pandaBackground,
-                  borderRadius: BorderRadius.circular(32),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.shadow,
-                      blurRadius: 16,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Stack(
-                  children: [
-                    // Bamboo earned badge
-                    Positioned(
-                      top: 16,
-                      right: 16,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.white,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Text('🌿', style: TextStyle(fontSize: 20)),
-                            const SizedBox(width: 4),
-                            Text(
-                              '+${session?.bambooEarned ?? 12}',
-                              style: AppTextStyles.titleMedium.copyWith(
-                                color: AppColors.bamboo,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    // Panda
-                    Center(
-                      child: Image.asset(
-                        'assets/images/success_panda.png',
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              
-              const SizedBox(height: 32),
-              
-              // Title
-              Text(
-                'Yummy Success!',
-                style: AppTextStyles.displayMedium.copyWith(
-                  color: AppColors.success,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'You just fed Po ${session?.bambooEarned ?? 12} bamboo shoots!',
-                style: AppTextStyles.bodyLarge.copyWith(
-                  color: AppColors.textMedium,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              
-              const SizedBox(height: 32),
-              
-              // Stats cards
-              Row(
-                children: [
-                  Expanded(
-                    child: _StatCard(
-                      icon: Icons.timer_outlined,
-                      iconColor: AppColors.primary,
-                      label: 'FOCUS TIME',
-                      value: TimeFormatter.formatDurationText(focusTime),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _StatCard(
-                      icon: Icons.local_fire_department_outlined,
-                      iconColor: AppColors.streak,
-                      label: 'STREAK',
-                      value: '$streak Days',
-                    ),
-                  ),
-                ],
-              ),
-              
-              const SizedBox(height: 16),
-              
-              // Partner info (if connected)
-              if (partnerStatus != null)
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                
+                // Happy panda with bamboo
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  height: 300,
                   decoration: BoxDecoration(
-                    color: AppColors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: AppColors.partnerBlue.withValues(alpha: 0.3),
-                      width: 2,
-                    ),
+                    color: AppColors.pandaBackground,
+                    borderRadius: BorderRadius.circular(32),
                   ),
-                  child: Row(
+                  child: Stack(
                     children: [
-                      CircleAvatar(
-                        radius: 24,
-                        backgroundColor: AppColors.partnerBlue.withValues(alpha: 0.2),
-                        child: Text(
-                          partnerStatus.partnerName[0],
-                          style: AppTextStyles.titleLarge,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              partnerStatus.partnerName,
-                              style: AppTextStyles.titleMedium,
-                            ),
-                            Text(
-                              partnerStatus.statusText,
-                              style: AppTextStyles.bodySmall.copyWith(
-                                color: AppColors.textLight,
+                      // Bamboo earned badge
+                      Positioned(
+                        top: 16,
+                        right: 16,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.white,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text('🌿', style: TextStyle(fontSize: 20)),
+                              const SizedBox(width: 4),
+                              Text(
+                                '+${session?.bambooEarned ?? 12}',
+                                style: AppTextStyles.titleMedium.copyWith(
+                                  color: AppColors.bamboo,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                      const Icon(
-                        Icons.favorite,
-                        color: AppColors.error,
-                        size: 24,
+                      // Panda
+                      Center(
+                        child: Image.asset(
+                          'assets/images/success_panda.png',
+                        ),
                       ),
                     ],
                   ),
                 ),
-              
-              const Spacer(),
-              
-              // Claim rewards button
-              CustomButton(
-                text: 'Claim Rewards',
-                icon: Icons.check_circle_outline,
-                onPressed: () async {
-                  // Complete the session
-                  await ref.read(timerProvider.notifier).complete();
-                  
-                  if (context.mounted) {
-                    // Go back to deep focus
-                    Navigator.pop(context);
-                    
-                    // Optionally start break
-                    // ref.read(timerProvider.notifier).startBreak();
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) => const BreakScreen(),
-                    //   ),
-                    // );
-                  }
-                },
-              ),
-              
-              const SizedBox(height: 12),
-              
-              // Back to forest link
-              TextButton(
-                onPressed: () async {
-                  await ref.read(timerProvider.notifier).complete();
-                  if (context.mounted) {
-                    Navigator.pop(context);
-                  }
-                },
-                child: Text(
-                  'Back to Forest',
-                  style: AppTextStyles.bodyMedium.copyWith(
+                
+                const SizedBox(height: 32),
+                
+                // Title
+                Text(
+                  'Yummy Success!',
+                  style: AppTextStyles.displayMedium.copyWith(
+                    color: AppColors.success,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'You just fed Po ${session?.bambooEarned ?? 12} bamboo shoots!',
+                  style: AppTextStyles.bodyLarge.copyWith(
                     color: AppColors.textMedium,
                   ),
+                  textAlign: TextAlign.center,
                 ),
-              ),
-            ],
+                
+                const SizedBox(height: 32),
+                
+                // Stats cards
+                Row(
+                  children: [
+                    Expanded(
+                      child: _StatCard(
+                        icon: Icons.timer_outlined,
+                        iconColor: AppColors.primary,
+                        label: 'FOCUS TIME',
+                        value: TimeFormatter.formatDurationText(focusTime),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: _StatCard(
+                        icon: Icons.local_fire_department_outlined,
+                        iconColor: AppColors.streak,
+                        label: 'STREAK',
+                        value: '$streak Days',
+                      ),
+                    ),
+                  ],
+                ),
+                
+                const SizedBox(height: 16),
+                
+                // Partner info (if connected)
+                if (partnerStatus != null)
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: AppColors.partnerBlue.withValues(alpha: 0.3),
+                        width: 2,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 24,
+                          backgroundColor: AppColors.partnerBlue.withValues(alpha: 0.2),
+                          child: Text(
+                            partnerStatus.partnerName[0],
+                            style: AppTextStyles.titleLarge,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                partnerStatus.partnerName,
+                                style: AppTextStyles.titleMedium,
+                              ),
+                              Text(
+                                partnerStatus.statusText,
+                                style: AppTextStyles.bodySmall.copyWith(
+                                  color: AppColors.textLight,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(
+                          Icons.favorite,
+                          color: AppColors.error,
+                          size: 24,
+                        ),
+                      ],
+                    ),
+                  ),
+                
+                const SizedBox(height: 16),
+                // Claim rewards button
+                CustomButton(
+                  text: 'Claim Rewards',
+                  icon: Icons.check_circle_outline,
+                  onPressed: () async {
+                    // Complete the session
+                    await ref.read(timerProvider.notifier).complete();
+                    
+                    if (context.mounted) {
+                      // Go back to deep focus
+                      Navigator.pop(context);
+                      
+                      // Optionally start break
+                      // ref.read(timerProvider.notifier).startBreak();
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => const BreakScreen(),
+                      //   ),
+                      // );
+                    }
+                  },
+                ),
+                
+                const SizedBox(height: 12),
+                
+                // Back to forest link
+                TextButton(
+                  onPressed: () async {
+                    await ref.read(timerProvider.notifier).complete();
+                    if (context.mounted) {
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: Text(
+                    'Back to Forest',
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.textMedium,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hive/hive.dart';
 
 part 'user.g.dart';
@@ -87,6 +88,41 @@ class User extends HiveObject {
   @override
   String toString() {
     return 'User(id: $id, name: $name, streak: $currentStreak, bamboo: $totalBamboo)';
+  }
+
+
+  /// Convert to JSON for Firestore
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      'currentStreak': currentStreak,
+      'totalBamboo': totalBamboo,
+      'partnerId': partnerId,
+      'roomCode': roomCode,
+      'createdAt': Timestamp.fromDate(createdAt),
+      'lastSessionDate': lastSessionDate != null ? Timestamp.fromDate(lastSessionDate!) : null,
+      'avatarUrl': avatarUrl,
+      'photoUrl': photoUrl,
+    };
+  }
+
+  /// Create user from JSON
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      id: json['id'],
+      name: json['name'],
+      email: json['email'],
+      currentStreak: json['currentStreak'] ?? 0,
+      totalBamboo: json['totalBamboo'] ?? 0,
+      partnerId: json['partnerId'],
+      roomCode: json['roomCode'],
+      createdAt: (json['createdAt'] as Timestamp).toDate(),
+      lastSessionDate: json['lastSessionDate'] != null ? (json['lastSessionDate'] as Timestamp).toDate() : null,
+      avatarUrl: json['avatarUrl'],
+      photoUrl: json['photoUrl'],
+    );
   }
 }
 

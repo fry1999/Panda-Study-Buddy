@@ -49,7 +49,14 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
     
     // Create guest user if not already logged in
     if (!authNotifier.isLoggedIn) {
-      await authNotifier.createGuestUser();
+      // await authNotifier.createGuestUser();
+      // Message user to login or signup
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please login or signup to join a room')),
+        );
+      }
+      return;
     }
 
     // Simulate joining room

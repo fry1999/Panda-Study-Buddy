@@ -82,6 +82,11 @@ flutter pub run build_runner build --delete-conflicting-outputs
 flutter run
 ```
 
+5. Upload app
+```bash
+flutter build appbundle --release
+```
+
 ## Usage
 
 ### First Time Setup

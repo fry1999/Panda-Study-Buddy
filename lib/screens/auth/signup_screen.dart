@@ -39,7 +39,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final success = await ref.read(authProvider.notifier).signup(
+      final success = await ref.read(authProvider.notifier).signUpWithEmailPassword(
             _nameController.text.trim(),
             _emailController.text.trim(),
             _passwordController.text,
