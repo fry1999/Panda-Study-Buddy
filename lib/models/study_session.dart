@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hive/hive.dart';
 import 'package:panda_study_buddy/core/constants/app_constants.dart';
 
@@ -112,6 +113,36 @@ class StudySession extends HiveObject {
   @override
   String toString() {
     return 'StudySession(id: $id, type: $sessionType, duration: ${duration.inMinutes}m, completed: $completed)';
+  }
+
+  /// Convert to JSON for Firestore
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'userId': userId,
+      'startTime': Timestamp.fromDate(startTime),
+      'endTime': endTime != null ? Timestamp.fromDate(endTime!) : null,
+      'durationSeconds': durationSeconds,
+      'sessionType': sessionType,
+      'bambooEarned': bambooEarned,
+      'completed': completed,
+      'partnerId': partnerId,
+    };
+  }
+
+  /// Create from Firestore document
+  factory StudySession.fromJson(Map<String, dynamic> json) {
+    return StudySession(
+      id: json['id'],
+      userId: json['userId'],
+      startTime: (json['startTime'] as Timestamp).toDate(),
+      endTime: json['endTime'] != null ? (json['endTime'] as Timestamp).toDate() : null,
+      durationSeconds: json['durationSeconds'],
+      sessionType: json['sessionType'],
+      bambooEarned: json['bambooEarned'],
+      completed: json['completed'],
+      partnerId: json['partnerId'],
+    );
   }
 }
 

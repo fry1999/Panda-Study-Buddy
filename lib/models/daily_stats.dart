@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hive/hive.dart';
 
 part 'daily_stats.g.dart';
@@ -93,5 +94,34 @@ class DailyStats extends HiveObject {
   String toString() {
     return 'DailyStats(date: ${date.toIso8601String().split('T')[0]}, sessions: $sessionsCompleted, time: ${totalFocusTime.inMinutes}m, bamboo: $bambooEarned)';
   }
-}
 
+  /// Create stats from Firestore document
+  factory DailyStats.fromJson(Map<String, dynamic> json) {
+    return DailyStats(
+      id: json['id'],
+      date: DateTime.parse(json['date']),
+      totalFocusTimeSeconds: json['totalFocusTimeSeconds'],
+      sessionsCompleted: json['sessionsCompleted'],
+      bambooEarned: json['bambooEarned'],
+      streakCount: json['streakCount'],
+      userId: json['userId'],
+      partnerId: json['partnerId'],
+      partnerFocusTimeSeconds: json['partnerFocusTimeSeconds'],
+    );
+  }
+
+  /// Convert to JSON for Firestore
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'date': Timestamp.fromDate(date),
+      'totalFocusTimeSeconds': totalFocusTimeSeconds,
+      'sessionsCompleted': sessionsCompleted,
+      'bambooEarned': bambooEarned,
+      'streakCount': streakCount,
+      'userId': userId,
+      'partnerId': partnerId,
+      'partnerFocusTimeSeconds': partnerFocusTimeSeconds,
+    };
+  }
+}
