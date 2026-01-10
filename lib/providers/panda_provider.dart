@@ -10,15 +10,19 @@ final pandaStateProvider = Provider<PandaState>((ref) {
   final timerState = ref.watch(timerProvider);
   
   // Watch if daily goal is met
-  final isGoalMet = ref.watch(isDailyGoalMetProvider);
+  final isGoalMetAsync = ref.watch(isDailyGoalMetProvider);
   
   // Watch if user has studied today
-  final sessionCount = ref.watch(todaySessionCountProvider);
+  final sessionCountAsync = ref.watch(todaySessionCountProvider);
   
   // Determine panda state
   if (timerState.isRunning && timerState.sessionType == SessionType.focus) {
     return PandaState.studying;
   }
+  
+  // Handle async values
+  final isGoalMet = isGoalMetAsync.value ?? false;
+  final sessionCount = sessionCountAsync.value ?? 0;
   
   if (isGoalMet) {
     return PandaState.resting;

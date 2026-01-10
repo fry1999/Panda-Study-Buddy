@@ -122,7 +122,11 @@ class SuccessScreen extends ConsumerWidget {
                         icon: Icons.timer_outlined,
                         iconColor: AppColors.primary,
                         label: 'FOCUS TIME',
-                        value: TimeFormatter.formatDurationText(focusTime),
+                        value: focusTime.when(
+                          data: (duration) => TimeFormatter.formatDurationText(duration),
+                          loading: () => '--:--',
+                          error: (error, stack) => '--:--',
+                        ),
                       ),
                     ),
                     const SizedBox(width: 16),

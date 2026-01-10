@@ -165,7 +165,11 @@ class RecapScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        TimeFormatter.formatDurationText(focusTime),
+                        focusTime.when(
+                          data: (duration) => TimeFormatter.formatDurationText(duration),
+                          loading: () => '--:--',
+                          error: (error, stack) => '--:--',
+                        ),
                         style: AppTextStyles.displayLarge,
                       ),
                       const SizedBox(height: 16),
@@ -239,7 +243,11 @@ class RecapScreen extends ConsumerWidget {
                       icon: Icons.person_outline,
                       iconColor: AppColors.userGreen,
                       title: 'Your Focus',
-                      value: TimeFormatter.formatDurationText(focusTime),
+                      value: focusTime.when(
+                        data: (duration) => TimeFormatter.formatDurationText(duration),
+                        loading: () => '--:--',
+                        error: (_, __) => '--:--',
+                      ),
                       subtitle: '+$streak Stalks',
                       subtitleColor: AppColors.success,
                     ),
@@ -295,7 +303,11 @@ class RecapScreen extends ConsumerWidget {
                             style: AppTextStyles.titleMedium,
                           ),
                           Text(
-                            'Forest grew +${bambooEarned ~/ 10}cm today!',
+                            bambooEarned.when(
+                              data: (bamboo) => 'Forest grew +${bamboo ~/ 10}cm today!',
+                              loading: () => 'Loading...',
+                              error: (_, __) => 'Forest grew today!',
+                            ),
                             style: AppTextStyles.bodySmall.copyWith(
                               color: AppColors.textLight,
                             ),

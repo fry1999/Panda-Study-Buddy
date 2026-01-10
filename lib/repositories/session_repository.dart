@@ -3,7 +3,7 @@ import 'package:panda_study_buddy/core/utils/time_formatter.dart';
 import 'package:panda_study_buddy/models/study_session.dart';
 
 /// Repository for managing study sessions
-class SessionRepository {
+class FirestoreSessionRepository {
   static const String _boxName = 'sessions';
   
   /// Get the sessions box

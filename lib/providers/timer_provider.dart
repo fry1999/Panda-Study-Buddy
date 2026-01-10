@@ -83,7 +83,16 @@ class TimerNotifier extends StateNotifier<TimerState> {
 
   /// Resume the timer
   void resume() {
-    start();
+    if (!state.isPaused) return;
+    
+    // Don't call start() because it would overwrite startTime
+    state = state.copyWith(
+      isRunning: true,
+      isPaused: false,
+      // Keep the original startTime!
+    );
+
+    _timer = Timer.periodic(const Duration(seconds: 1), _tick);
   }
 
   /// Reset the timer
@@ -120,22 +129,22 @@ class TimerNotifier extends StateNotifier<TimerState> {
   Future<void> completeEarly() async {
     _timer?.cancel();
 
-    // Only save focus sessions
-    if (state.sessionType == SessionType.focus && state.startTime != null) {
-      final actualDuration = DateTime.now().difference(state.startTime!);
-      final sessionNotifier = ref.read(sessionProvider.notifier);
-
-      // Complete with actual duration
-      await sessionNotifier.completeCurrentSessionEarly(actualDuration.inSeconds);
-    }
-
-    // Reset to focus mode
+    // Reset to focus mode first (so UI updates even if save fails)
     final duration = const Duration(minutes: AppConstants.focusDurationMinutes);
     state = TimerState(
       remaining: duration,
       total: duration,
       sessionType: SessionType.focus,
     );
+
+    // Only save focus sessions
+    if (state.sessionType == SessionType.focus && state.startTime != null) {
+      final actualDuration = DateTime.now().difference(state.startTime!);
+      final sessionNotifier = ref.read(sessionProvider.notifier);
+
+      // Complete with actual duration - let errors propagate to caller
+      await sessionNotifier.completeCurrentSessionEarly(actualDuration.inSeconds);
+    }
   }
 
   /// Switch to break mode
@@ -168,11 +177,21 @@ class TimerNotifier extends StateNotifier<TimerState> {
 
   void _tick(Timer timer) {
     if (state.remaining.inSeconds > 0) {
-      state = state.copyWith(
-        remaining: state.remaining - const Duration(seconds: 1),
-      );
+      final newRemaining = state.remaining - const Duration(seconds: 1);
+      
+      // If we're about to hit 0, stop the timer and update state atomically
+      if (newRemaining.inSeconds <= 0) {
+        _timer?.cancel();
+        state = state.copyWith(
+          remaining: Duration.zero,
+          isRunning: false,
+        );
+      } else {
+        // Normal countdown
+        state = state.copyWith(remaining: newRemaining);
+      }
     } else {
-      // Timer completed
+      // This should not happen anymore, but keep for safety
       _timer?.cancel();
       state = state.copyWith(isRunning: false);
     }

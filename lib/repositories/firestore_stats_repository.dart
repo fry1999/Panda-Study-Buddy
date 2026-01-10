@@ -60,7 +60,7 @@ class FirestoreStatsRepository {
       // Try to get existing stats
       final existingStats = await getStats(dateKey);
 
-      if(existingStats == null) {
+      if(existingStats != null) {
         // Update existing stats
         await _statsRef.doc(dateKey).update({
           'totalFocusTimeSeconds': FieldValue.increment(durationSeconds),
@@ -81,6 +81,15 @@ class FirestoreStatsRepository {
     } catch (e) {
       throw Exception('Failed to update today\'s stats: $e');
     }
+  }
+
+  /// Check if daily goal is met
+  Future<bool> isDailyGoalMet() async {
+    final today = DateTime.now();
+    final dateKey = _getDateKey(today);
+    final stats = await getStats(dateKey);
+    if(stats == null) return false;
+    return stats.sessionsCompleted >= 3 || stats.totalFocusTimeSeconds >= 90 * 60;
   }
 
 

@@ -93,81 +93,108 @@ class CalendarScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 12),
               
-              if (sessions.isEmpty)
-                Container(
+              sessions.when(
+                data: (sessionsList) {
+                  if (sessionsList.isEmpty) {
+                    return Container(
+                      padding: const EdgeInsets.all(32),
+                      decoration: BoxDecoration(
+                        color: AppColors.white,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Center(
+                        child: Column(
+                          children: [
+                            const Text(
+                              '🐼',
+                              style: TextStyle(fontSize: 48),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              'No sessions yet today',
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                color: AppColors.textLight,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+                  return Column(
+                    children: sessionsList.map((session) {
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: AppColors.white,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: AppColors.lightGreen,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Icon(
+                                Icons.check_circle,
+                                color: AppColors.success,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Focus Session',
+                                    style: AppTextStyles.titleSmall,
+                                  ),
+                                  Text(
+                                    TimeFormatter.formatTime(session.startTime),
+                                    style: AppTextStyles.bodySmall.copyWith(
+                                      color: AppColors.textLight,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Text(
+                              TimeFormatter.formatDurationText(session.duration),
+                              style: AppTextStyles.titleMedium.copyWith(
+                                color: AppColors.primary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  );
+                },
+                loading: () => const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(32.0),
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+                error: (error, stack) => Container(
                   padding: const EdgeInsets.all(32),
                   decoration: BoxDecoration(
                     color: AppColors.white,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Center(
-                    child: Column(
-                      children: [
-                        const Text(
-                          '🐼',
-                          style: TextStyle(fontSize: 48),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          'No sessions yet today',
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            color: AppColors.textLight,
-                          ),
-                        ),
-                      ],
+                    child: Text(
+                      'Error loading sessions',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: AppColors.error,
+                      ),
                     ),
                   ),
-                )
-              else
-                ...sessions.map((session) {
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppColors.white,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: AppColors.lightGreen,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Icon(
-                            Icons.check_circle,
-                            color: AppColors.success,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Focus Session',
-                                style: AppTextStyles.titleSmall,
-                              ),
-                              Text(
-                                TimeFormatter.formatTime(session.startTime),
-                                style: AppTextStyles.bodySmall.copyWith(
-                                  color: AppColors.textLight,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Text(
-                          TimeFormatter.formatDurationText(session.duration),
-                          style: AppTextStyles.titleMedium.copyWith(
-                            color: AppColors.primary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }).toList(),
+                ),
+              ),
             ],
           ),
         ),

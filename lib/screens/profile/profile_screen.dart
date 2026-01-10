@@ -48,21 +48,10 @@ class ProfileScreen extends ConsumerWidget {
           child: Column(
             children: [
               // Profile card
-              Container(
-                width: 120,
-                height: 120,
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: AppColors.white,
-                  borderRadius: BorderRadius.circular(999),
-                  border: Border.all(color: AppColors.primaryLight, width: 4),
-                ),
-                child: const Center(
-                  child: Text(
-                    '🐼',
-                    style: TextStyle(fontSize: 40),
-                  ),
-                ),
+              CircleAvatar(
+                radius: 54,
+                backgroundImage: NetworkImage(user.photoUrl ?? ''),
+
               ),
               const SizedBox(height: 16),
               Text(
@@ -110,7 +99,11 @@ class ProfileScreen extends ConsumerWidget {
                       icon: Icons.timer,
                       iconColor: AppColors.primary,
                       label: 'Today',
-                      value: TimeFormatter.formatDurationText(focusTime),
+                      value: focusTime.when(
+                        data: (duration) => TimeFormatter.formatDurationText(duration),
+                        loading: () => '--:--',
+                        error: (error, stack) => '--:--',
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -119,7 +112,11 @@ class ProfileScreen extends ConsumerWidget {
                       icon: Icons.check_circle,
                       iconColor: AppColors.success,
                       label: 'Sessions',
-                      value: '$sessionCount',
+                      value: sessionCount.when(
+                        data: (count) => '$count',
+                        loading: () => '--',
+                        error: (_, __) => '--',
+                      ),
                     ),
                   ),
                 ],

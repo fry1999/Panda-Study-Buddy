@@ -271,19 +271,58 @@ class AuthNotifier extends StateNotifier<User?> {
   Future<void> updateAfterSession(int bambooEarned) async {
     if (state == null) return;
 
-    await repository.updateBamboo(state!.id, bambooEarned);
-    await repository.updateLastSessionDate(state!.id, DateTime.now());
-    
-    // Reload user to get updated data
-    _loadCurrentUser();
+    try {
+      // Update in Firestore
+      await _firestoreRepo.updateBambooCount(state!.id, bambooEarned);
+      await _firestoreRepo.updateLastSessionDate(state!.id, DateTime.now());
+      
+      // Also update local storage for offline access
+      await repository.updateBamboo(state!.id, bambooEarned);
+      await repository.updateLastSessionDate(state!.id, DateTime.now());
+      
+      // Reload user from Firestore to get updated data
+      final updatedUser = await _firestoreRepo.getUser(state!.id);
+      if (updatedUser != null) {
+        state = updatedUser;
+        // Save to local storage
+        await repository.saveUser(updatedUser);
+      }
+    } catch (e) {
+      print('Warning: Failed to update user data after session: $e');
+      // Update local state at least
+      state?.addBamboo(bambooEarned);
+      state?.lastSessionDate = DateTime.now();
+      if (state != null) {
+        await repository.saveUser(state!);
+      }
+    }
   }
 
   /// Update streak
   Future<void> updateStreak(int newStreak) async {
     if (state == null) return;
 
-    await repository.updateStreak(state!.id, newStreak);
-    _loadCurrentUser();
+    try {
+      // Update in Firestore
+      await _firestoreRepo.updateStreak(state!.id, newStreak);
+      
+      // Also update local storage
+      await repository.updateStreak(state!.id, newStreak);
+      
+      // Reload user from Firestore
+      final updatedUser = await _firestoreRepo.getUser(state!.id);
+      if (updatedUser != null) {
+        state = updatedUser;
+        await repository.saveUser(updatedUser);
+      }
+    } catch (e) {
+      print('Warning: Failed to update streak: $e');
+      // Update local state at least
+      state?.currentStreak = newStreak;
+      if (state != null) {
+        await repository.saveUser(state!);
+      }
+    }
   }
 
   /// Set partner

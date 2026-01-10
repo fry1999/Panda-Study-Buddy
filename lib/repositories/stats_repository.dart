@@ -4,12 +4,12 @@ import 'package:panda_study_buddy/models/daily_stats.dart';
 import 'package:panda_study_buddy/repositories/session_repository.dart';
 
 /// Repository for managing daily statistics
-class StatsRepository {
+class FirestoreStatsRepository {
   static const String _boxName = 'stats';
   
-  final SessionRepository _sessionRepository;
+  final FirestoreSessionRepository _sessionRepository;
   
-  StatsRepository(this._sessionRepository);
+  FirestoreStatsRepository(this._sessionRepository);
   
   /// Get the stats box
   Box<DailyStats> get _box => Hive.box<DailyStats>(_boxName);

@@ -96,7 +96,13 @@ class DeepFocusScreen extends ConsumerWidget {
               const SizedBox(height: 18),
               
               // Bamboo counter
-              BambooCounter(count: bambooCount),
+              BambooCounter(
+                count: bambooCount.when(
+                  data: (count) => count,
+                  loading: () => 0,
+                  error: (_, __) => 0,
+                ),
+              ),
               
               const SizedBox(height: 18),
               // Partner status (if connected)
@@ -220,14 +226,32 @@ class DeepFocusScreen extends ConsumerWidget {
                             ),
                             TextButton(
                               onPressed: () async {
-                                await ref.read(timerProvider.notifier).completeEarly();
+                                // Close dialog first
                                 Navigator.pop(context);
-                                // Navigate to success screen
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => const SuccessScreen(),
-                                  ),
-                                );
+                                
+                                try {
+                                  await ref.read(timerProvider.notifier).completeEarly();
+                                  
+                                  // Navigate to success screen
+                                  if (context.mounted) {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => const SuccessScreen(),
+                                      ),
+                                    );
+                                  }
+                                } catch (e) {
+                                  // Show error message but don't block the flow
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Đã hoàn thành session, nhưng có lỗi khi lưu dữ liệu: ${e.toString()}'),
+                                        backgroundColor: AppColors.warning,
+                                        duration: const Duration(seconds: 5),
+                                      ),
+                                    );
+                                  }
+                                }
                               },
                               child: Text(
                                 'Hoàn thành',
