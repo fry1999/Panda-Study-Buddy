@@ -49,6 +49,10 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   path_provider: ^2.1.0
+  shared_preferences: ^2.2.2
+  
+  # Audio
+  audioplayers: ^5.2.1
   
   # UtilitiesP
   intl: ^0.18.0
@@ -95,6 +99,7 @@ flutter:
   # Assets
   assets:
     - assets/images/
+    - assets/sounds/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

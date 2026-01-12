@@ -52,6 +52,13 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           ),
         );
       }
+      else {
+        if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Signup failed')),
+          );
+        }
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

@@ -99,11 +99,13 @@ class DailyStats extends HiveObject {
   factory DailyStats.fromJson(Map<String, dynamic> json) {
     return DailyStats(
       id: json['id'],
-      date: DateTime.parse(json['date']),
-      totalFocusTimeSeconds: json['totalFocusTimeSeconds'],
-      sessionsCompleted: json['sessionsCompleted'],
-      bambooEarned: json['bambooEarned'],
-      streakCount: json['streakCount'],
+      date: (json['date'] is Timestamp) 
+          ? (json['date'] as Timestamp).toDate() 
+          : DateTime.parse(json['date']),
+      totalFocusTimeSeconds: json['totalFocusTimeSeconds'] ?? 0,
+      sessionsCompleted: json['sessionsCompleted'] ?? 0,
+      bambooEarned: json['bambooEarned'] ?? 0,
+      streakCount: json['streakCount'] ?? 0,
       userId: json['userId'],
       partnerId: json['partnerId'],
       partnerFocusTimeSeconds: json['partnerFocusTimeSeconds'],

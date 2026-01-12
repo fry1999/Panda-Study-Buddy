@@ -32,6 +32,9 @@ class AuthNotifier extends StateNotifier<User?> {
   final UserRepository repository;
   final GoogleSignIn _googleSignIn;
   final firebase_auth.FirebaseAuth _firebaseAuth;
+  
+  bool _isInitialized = false;
+  bool get isInitialized => _isInitialized;
 
 
   AuthNotifier(this._firestoreRepo,
@@ -46,31 +49,40 @@ class AuthNotifier extends StateNotifier<User?> {
   /// Initialize authentication from Firestore 
   Future<void> _initAuth() async {
     final firebaseUser = firebase_auth.FirebaseAuth.instance.currentUser;
+    
     if (firebaseUser != null) {
-      // Load user form Firestore
+      // Ensure user has all required fields (migration for existing users)
+      try {
+        await _firestoreRepo.ensureUserFields(firebaseUser.uid);
+      } catch (e) {
+        print('Warning: Failed to ensure user fields: $e');
+      }
+      
+      // Load user from Firestore
       final user = await _firestoreRepo.getUser(firebaseUser.uid);
+      
       if (user != null) {
         state = user;
       }
-      else {
-        // Create new user in Firestore if doesn't exist 
-        final newUser = User(
-          id: firebaseUser.uid,
-          name: firebaseUser.displayName ?? 'User',
-          email: firebaseUser.email ?? '',
-          createdAt: DateTime.now(),
-          photoUrl: firebaseUser.photoURL,
-        );
-        await _firestoreRepo.saveUser(newUser);
-        state = newUser;
-      }
+      // If user doesn't exist in Firestore, don't create automatically
+      // User should sign up/sign in explicitly
     }
+    
+    // Mark initialization as complete
+    _isInitialized = true;
   }
 
   /// Listen to Firebase auth state changes
   void _listenToAuthChanges() {
     _firebaseAuth.authStateChanges().listen((firebaseUser) async {
       if (firebaseUser != null) {
+        // Ensure user has all required fields (migration for existing users)
+        try {
+          await _firestoreRepo.ensureUserFields(firebaseUser.uid);
+        } catch (e) {
+          print('Warning: Failed to ensure user fields: $e');
+        }
+        
         User? user;
         try {
           user = await _firestoreRepo.getUser(firebaseUser.uid);
@@ -82,24 +94,9 @@ class AuthNotifier extends StateNotifier<User?> {
         if (user != null) {
           state = user;
         }
-        else {
-          // Create new user (try Firestore, but continue even if it fails)
-          final newUser = User(
-            id: firebaseUser.uid,
-            name: firebaseUser.displayName ?? 'User',
-            email: firebaseUser.email ?? '',
-            createdAt: DateTime.now(),
-            photoUrl: firebaseUser.photoURL,
-          );
-          
-          try {
-            await _firestoreRepo.saveUser(newUser);
-          } catch (e) {
-            print('Firestore saveUser error (continuing anyway): $e');
-          }
-          
-          state = newUser;
-        }
+        // DO NOT create user automatically here - let the signup/signin methods handle user creation
+        // This prevents race conditions where the listener creates a user with wrong data
+        // before the signup method can save the correct data
       }
       else {
         // User signed out - clear local state
@@ -183,6 +180,8 @@ class AuthNotifier extends StateNotifier<User?> {
               id: firebaseUser.uid,
               name: firebaseUser.displayName ?? 'User',
               email: firebaseUser.email ?? '',
+              currentStreak: 0,
+              totalBamboo: 0,
               createdAt: DateTime.now(),
               photoUrl: firebaseUser.photoURL,
             );
@@ -242,9 +241,12 @@ class AuthNotifier extends StateNotifier<User?> {
           id: userCredential.user!.uid,
           name: name,
           email: email,
+          currentStreak: 0,
+          totalBamboo: 0,
           createdAt: DateTime.now(),
           photoUrl: userCredential.user!.photoURL,
         );
+        
         await _firestoreRepo.saveUser(newUser);
         state = newUser;
         return true;
@@ -252,10 +254,60 @@ class AuthNotifier extends StateNotifier<User?> {
       return false;
     } catch (e) {
       print('Error signing up with email and password: $e');
+      
+      // Check if Firebase auth succeeded despite the error
+      // This handles the Pigeon type cast bug where Firebase throws but user creation succeeds
+      if (_firebaseAuth.currentUser != null) {
+        final firebaseUser = _firebaseAuth.currentUser!;
+        
+        // Wait a bit for listener to process
+        await Future.delayed(const Duration(milliseconds: 500));
+        
+        // Check if the NEW user exists in Firestore
+        User? existingUser;
+        try {
+          existingUser = await _firestoreRepo.getUser(firebaseUser.uid);
+        } catch (e) {
+          print('Error checking if user exists: $e');
+          existingUser = null;
+        }
+        
+        // If the new user doesn't exist in Firestore, create it
+        if (existingUser == null) {
+          try {
+            final newUser = User(
+              id: firebaseUser.uid,
+              name: name,
+              email: email,
+              currentStreak: 0,
+              totalBamboo: 0,
+              createdAt: DateTime.now(),
+              photoUrl: firebaseUser.photoURL,
+            );
+            
+            // Try to save to Firestore
+            try {
+              await _firestoreRepo.saveUser(newUser);
+            } catch (firestoreError) {
+              print('Firestore save failed (continuing anyway): $firestoreError');
+            }
+            
+            state = newUser;
+          } catch (userCreationError) {
+            print('Failed to create user: $userCreationError');
+          }
+        } else {
+          // User already exists in Firestore, just update state
+          state = existingUser;
+        }
+        
+        // Return true if Firebase auth succeeded, regardless of Firestore status
+        return _firebaseAuth.currentUser != null;
+      }
+      
       return false;
     }
   }
-
   /// Logout
   Future<void> logout() async {
     try {
@@ -346,8 +398,13 @@ final authProvider = StateNotifierProvider<AuthNotifier, User?>((ref) {
   return AuthNotifier(firestoreRepo, repository, googleSignIn, firebaseAuth);
 });
 
+/// Provider to check if auth is initialized
+final authInitializedProvider = Provider<bool>((ref) {
+  final authNotifier = ref.watch(authProvider.notifier);
+  return authNotifier.isInitialized;
+});
+
 /// Is logged in provider
 final isLoggedInProvider = Provider<bool>((ref) {
   return ref.watch(authProvider) != null;
 });
-

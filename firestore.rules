@@ -48,8 +48,10 @@ service cloud.firestore {
                        request.resource.data.userId == request.auth.uid;
       
       // Allow users to update their own daily stats
+      // Check both existing resource and incoming request to handle edge cases
       allow update: if isAuthenticated() && 
-                      resource.data.userId == request.auth.uid;
+                      (resource.data.userId == request.auth.uid || 
+                       request.resource.data.userId == request.auth.uid);
       
       // Prevent deletion
       allow delete: if false;

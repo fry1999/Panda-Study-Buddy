@@ -89,7 +89,7 @@ class FirestoreStatsRepository {
     final dateKey = _getDateKey(today);
     final stats = await getStats(dateKey);
     if(stats == null) return false;
-    return stats.sessionsCompleted >= 3 || stats.totalFocusTimeSeconds >= 90 * 60;
+    return stats.sessionsCompleted == 1;
   }
 
 

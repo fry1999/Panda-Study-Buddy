@@ -80,6 +80,8 @@ class User extends HiveObject {
       id: id,
       name: 'Guest',
       email: '',
+      currentStreak: 0,
+      totalBamboo: 0,
       createdAt: DateTime.now(),
       photoUrl: '',
     );

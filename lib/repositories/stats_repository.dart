@@ -122,9 +122,8 @@ class FirestoreStatsRepository {
   /// Check if daily goal is met today
   bool isDailyGoalMet() {
     final sessions = _sessionRepository.getTodayFocusSessions();
-    final focusTime = _sessionRepository.getTodayFocusTime();
     
-    return sessions.length >= 3 || focusTime.inMinutes >= 90;
+    return sessions.length == 1;
   }
   
   /// Get current streak

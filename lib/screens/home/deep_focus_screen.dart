@@ -205,90 +205,90 @@ class DeepFocusScreen extends ConsumerWidget {
               ],
 
               // Complete Early button (if session is active)
-              if (timerState.isRunning || timerState.isPaused) ...[
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: OutlinedButton(
-                    onPressed: () {
-                      // Show confirmation dialog
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Hoàn thành sớm?'),
-                          content: const Text(
-                            'Bạn có chắc muốn hoàn thành session này sớm? Bạn vẫn sẽ nhận đủ 12 bamboo!',
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text('Không'),
-                            ),
-                            TextButton(
-                              onPressed: () async {
-                                // Close dialog first
-                                Navigator.pop(context);
+              // if (timerState.isRunning || timerState.isPaused) ...[
+              //   SizedBox(
+              //     width: double.infinity,
+              //     height: 56,
+              //     child: OutlinedButton(
+              //       onPressed: () {
+              //         // Show confirmation dialog
+              //         showDialog(
+              //           context: context,
+              //           builder: (context) => AlertDialog(
+              //             title: const Text('Hoàn thành sớm?'),
+              //             content: const Text(
+              //               'Bạn có chắc muốn hoàn thành session này sớm? Bạn vẫn sẽ nhận đủ 12 bamboo!',
+              //             ),
+              //             actions: [
+              //               TextButton(
+              //                 onPressed: () => Navigator.pop(context),
+              //                 child: const Text('Không'),
+              //               ),
+              //               TextButton(
+              //                 onPressed: () async {
+              //                   // Close dialog first
+              //                   Navigator.pop(context);
                                 
-                                try {
-                                  await ref.read(timerProvider.notifier).completeEarly();
+              //                   try {
+              //                     await ref.read(timerProvider.notifier).completeEarly();
                                   
-                                  // Navigate to success screen
-                                  if (context.mounted) {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) => const SuccessScreen(),
-                                      ),
-                                    );
-                                  }
-                                } catch (e) {
-                                  // Show error message but don't block the flow
-                                  if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('Đã hoàn thành session, nhưng có lỗi khi lưu dữ liệu: ${e.toString()}'),
-                                        backgroundColor: AppColors.warning,
-                                        duration: const Duration(seconds: 5),
-                                      ),
-                                    );
-                                  }
-                                }
-                              },
-                              child: Text(
-                                'Hoàn thành',
-                                style: TextStyle(color: AppColors.success),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: AppColors.success, width: 2),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(28),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.check_circle_outline,
-                          size: 24,
-                          color: AppColors.success,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Hoàn thành sớm',
-                          style: AppTextStyles.button.copyWith(
-                            fontSize: 16,
-                            color: AppColors.success,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+              //                     // Navigate to success screen
+              //                     if (context.mounted) {
+              //                       Navigator.of(context).push(
+              //                         MaterialPageRoute(
+              //                           builder: (context) => const SuccessScreen(),
+              //                         ),
+              //                       );
+              //                     }
+              //                   } catch (e) {
+              //                     // Show error message but don't block the flow
+              //                     if (context.mounted) {
+              //                       ScaffoldMessenger.of(context).showSnackBar(
+              //                         SnackBar(
+              //                           content: Text('Đã hoàn thành session, nhưng có lỗi khi lưu dữ liệu: ${e.toString()}'),
+              //                           backgroundColor: AppColors.warning,
+              //                           duration: const Duration(seconds: 5),
+              //                         ),
+              //                       );
+              //                     }
+              //                   }
+              //                 },
+              //                 child: Text(
+              //                   'Hoàn thành',
+              //                   style: TextStyle(color: AppColors.success),
+              //                 ),
+              //               ),
+              //             ],
+              //           ),
+              //         );
+              //       },
+              //       style: OutlinedButton.styleFrom(
+              //         side: BorderSide(color: AppColors.success, width: 2),
+              //         shape: RoundedRectangleBorder(
+              //           borderRadius: BorderRadius.circular(28),
+              //         ),
+              //       ),
+              //       child: Row(
+              //         mainAxisAlignment: MainAxisAlignment.center,
+              //         children: [
+              //           Icon(
+              //             Icons.check_circle_outline,
+              //             size: 24,
+              //             color: AppColors.success,
+              //           ),
+              //           const SizedBox(width: 8),
+              //           Text(
+              //             'Hoàn thành sớm',
+              //             style: AppTextStyles.button.copyWith(
+              //               fontSize: 16,
+              //               color: AppColors.success,
+              //             ),
+              //           ),
+              //         ],
+              //       ),
+              //     ),
+              //   ),
+              // ],
             ],
           ),
         ),

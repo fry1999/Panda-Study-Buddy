@@ -48,13 +48,27 @@ class FirestoreSessionRepository {
     try {
       final startOfDay = TimeFormatter.getStartOfDay(date);
       final endOfDay = TimeFormatter.getEndOfDay(date);
+      
+      // Fetch all user sessions and filter in memory to avoid requiring composite index
+      // This is efficient for personal use where users have limited sessions per day
       final querySnapshot = await _sessionsRef
         .where('userId', isEqualTo: userId)
-        .where('startTime', isGreaterThanOrEqualTo: startOfDay)
-        .where('startTime', isLessThanOrEqualTo: endOfDay)
-        .orderBy('startTime', descending: true)
         .get();
-      return querySnapshot.docs.map((doc) => StudySession.fromJson(doc.data())).toList();
+      
+      final sessions = querySnapshot.docs
+        .map((doc) => StudySession.fromJson(doc.data()))
+        .where((session) {
+          final sessionDate = session.startTime;
+          return sessionDate.isAfter(startOfDay) && sessionDate.isBefore(endOfDay) ||
+                 sessionDate.isAtSameMomentAs(startOfDay) ||
+                 sessionDate.isAtSameMomentAs(endOfDay);
+        })
+        .toList();
+      
+      // Sort by startTime descending in memory
+      sessions.sort((a, b) => b.startTime.compareTo(a.startTime));
+      
+      return sessions;
     } catch (e) {
       throw Exception('Failed to get sessions by date: $e');
     }

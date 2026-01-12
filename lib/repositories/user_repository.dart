@@ -59,6 +59,8 @@ class UserRepository {
         id: id ?? DateTime.now().millisecondsSinceEpoch.toString(),
         name: name ?? 'User',
         email: email ?? '',
+        currentStreak: 0,
+        totalBamboo: 0,
         createdAt: DateTime.now(),
         photoUrl: photoUrl,
       );

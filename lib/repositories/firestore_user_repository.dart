@@ -18,6 +18,35 @@ class FirestoreUserRepository {
     }
   }
 
+  /// Ensure user has all required fields (for migration of existing users)
+  Future<void> ensureUserFields(String userId) async {
+    try {
+      final doc = await _usersRef.doc(userId).get();
+      if (!doc.exists) return;
+      
+      final data = doc.data();
+      if (data == null) return;
+      
+      final Map<String, dynamic> updates = {};
+      
+      // Ensure currentStreak exists
+      if (!data.containsKey('currentStreak')) {
+        updates['currentStreak'] = 0;
+      }
+      
+      // Ensure totalBamboo exists
+      if (!data.containsKey('totalBamboo')) {
+        updates['totalBamboo'] = 0;
+      }
+      
+      if (updates.isNotEmpty) {
+        await _usersRef.doc(userId).update(updates);
+      }
+    } catch (e) {
+      throw Exception('Failed to ensure user fields: $e');
+    }
+  }
+
   Future<User?> getUser(String id) async {
     try {
       final doc = await _usersRef.doc(id).get();

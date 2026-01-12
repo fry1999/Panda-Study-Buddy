@@ -1,7 +1,7 @@
 /// App-wide constants
 class AppConstants {
   // Timer durations
-  static const int focusDurationMinutes = 1;
+  static const int focusDurationMinutes = 25;
   static const int breakDurationMinutes = 5;
   static const int longBreakDurationMinutes = 15;
   

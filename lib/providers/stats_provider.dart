@@ -29,13 +29,11 @@ class StatsNotifier extends StateNotifier<DailyStats?> {
     } catch (e) {
       print('Warning: Failed to load stats from Firestore: $e');
       // Keep existing state or create a default one
-      if (state == null) {
-        state = DailyStats.today(
+      state ??= DailyStats.today(
           id: _getTodayDateKey(),
           userId: user.id,
           streakCount: user.currentStreak,
         );
-      }
     }
   }
 
@@ -53,7 +51,8 @@ class StatsNotifier extends StateNotifier<DailyStats?> {
       );
 
       // Check if we should update streak
-      if (await firestoreRepository.isDailyGoalMet()) {
+      final goalMet = await firestoreRepository.isDailyGoalMet();
+      if (goalMet) {
         final authNotifier = ref.read(authProvider.notifier);
         await authNotifier.updateStreak(user.currentStreak + 1);
       }

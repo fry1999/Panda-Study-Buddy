@@ -95,9 +95,6 @@ class SessionNotifier extends StateNotifier<ActiveSessionState> {
 
     final session = state.session!;
     session.complete();
-    
-    // Clear state first so UI updates immediately
-    state = ActiveSessionState();
 
     try {
       await firestoreRepository.saveSession(session);
@@ -117,6 +114,10 @@ class SessionNotifier extends StateNotifier<ActiveSessionState> {
       print('Warning: Failed to save session data: $e');
       // The session is still marked as complete in the UI
     }
+    
+    // Clear state AFTER all async operations complete
+    // This prevents race conditions where providers rebuild before Firestore save completes
+    state = ActiveSessionState();
   }
 
   /// Cancel the current session

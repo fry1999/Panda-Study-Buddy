@@ -5,8 +5,8 @@ import 'package:panda_study_buddy/core/utils/time_formatter.dart';
 import 'package:panda_study_buddy/providers/auth_provider.dart';
 import 'package:panda_study_buddy/providers/session_provider.dart';
 import 'package:panda_study_buddy/providers/stats_provider.dart';
+import 'package:panda_study_buddy/screens/auth/login_screen.dart';
 import 'package:panda_study_buddy/screens/recap/recap_screen.dart';
-import 'package:panda_study_buddy/screens/welcome_screen.dart';
 
 /// Profile screen
 class ProfileScreen extends ConsumerWidget {
@@ -165,7 +165,7 @@ class ProfileScreen extends ConsumerWidget {
                   if (context.mounted) {
                     Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(
-                        builder: (context) => const WelcomeScreen(),
+                        builder: (context) => const LoginScreen(),
                       ),
                       (route) => false,
                     );

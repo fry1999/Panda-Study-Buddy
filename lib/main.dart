@@ -6,7 +6,7 @@ import 'package:panda_study_buddy/core/theme/app_theme.dart';
 import 'package:panda_study_buddy/models/daily_stats.dart';
 import 'package:panda_study_buddy/models/study_session.dart';
 import 'package:panda_study_buddy/models/user.dart';
-import 'package:panda_study_buddy/screens/welcome_screen.dart';
+import 'package:panda_study_buddy/screens/auth_gate.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,7 +44,7 @@ class PandaStudyBuddyApp extends StatelessWidget {
       title: 'Panda Study Buddy',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: const WelcomeScreen(),
+      home: const AuthGate(),
     );
   }
 }
