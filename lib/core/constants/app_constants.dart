@@ -34,6 +34,11 @@ class AppConstants {
   static const String isLoggedInKey = 'is_logged_in';
   static const String roomCodeKey = 'room_code';
   static const String partnerIdKey = 'partner_id';
+  
+  // Music settings
+  static const String focusMusicPath = 'assets/sounds/focus_music.mp3';
+  static const String musicEnabledKey = 'music_enabled';
+  static const double defaultMusicVolume = 0.5;
 }
 
 /// Session types

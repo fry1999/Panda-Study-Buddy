@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:panda_study_buddy/core/constants/app_constants.dart';
+import 'package:panda_study_buddy/providers/music_provider.dart';
 import 'package:panda_study_buddy/providers/session_provider.dart';
 
 /// Timer state
@@ -70,6 +71,9 @@ class TimerNotifier extends StateNotifier<TimerState> {
     );
 
     _timer = Timer.periodic(const Duration(seconds: 1), _tick);
+    
+    // Start music if enabled
+    ref.read(musicProvider.notifier).play();
   }
 
   /// Pause the timer
@@ -79,6 +83,9 @@ class TimerNotifier extends StateNotifier<TimerState> {
       isRunning: false,
       isPaused: true,
     );
+    
+    // Pause music
+    ref.read(musicProvider.notifier).pause();
   }
 
   /// Resume the timer
@@ -93,6 +100,9 @@ class TimerNotifier extends StateNotifier<TimerState> {
     );
 
     _timer = Timer.periodic(const Duration(seconds: 1), _tick);
+    
+    // Resume music
+    ref.read(musicProvider.notifier).resume();
   }
 
   /// Reset the timer
@@ -104,11 +114,17 @@ class TimerNotifier extends StateNotifier<TimerState> {
       total: duration,
       sessionType: state.sessionType,
     );
+    
+    // Stop music
+    ref.read(musicProvider.notifier).stop();
   }
 
   /// Stop and complete the session
   Future<void> complete() async {
     _timer?.cancel();
+    
+    // Stop music
+    ref.read(musicProvider.notifier).stop();
 
     // Only save focus sessions
     if (state.sessionType == SessionType.focus) {
@@ -128,6 +144,9 @@ class TimerNotifier extends StateNotifier<TimerState> {
   /// Stop and complete the session early
   Future<void> completeEarly() async {
     _timer?.cancel();
+    
+    // Stop music
+    ref.read(musicProvider.notifier).stop();
 
     // Reset to focus mode first (so UI updates even if save fails)
     final duration = const Duration(minutes: AppConstants.focusDurationMinutes);

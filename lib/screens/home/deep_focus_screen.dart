@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:panda_study_buddy/core/theme/app_theme.dart';
 import 'package:panda_study_buddy/core/utils/time_formatter.dart';
+import 'package:panda_study_buddy/providers/music_provider.dart';
 import 'package:panda_study_buddy/providers/partner_provider.dart';
 import 'package:panda_study_buddy/providers/session_provider.dart';
 import 'package:panda_study_buddy/providers/timer_provider.dart';
@@ -19,6 +20,7 @@ class DeepFocusScreen extends ConsumerWidget {
     final timerState = ref.watch(timerProvider);
     final partnerStatus = ref.watch(partnerStatusProvider);
     final bambooCount = ref.watch(todayBambooProvider);
+    final musicState = ref.watch(musicProvider);
 
     // Check if timer completed
     ref.listen<TimerState>(timerProvider, (previous, current) {
@@ -44,6 +46,31 @@ class DeepFocusScreen extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
+          IconButton(
+            icon: Icon(
+              musicState.isMusicEnabled
+                  ? Icons.volume_up_rounded
+                  : Icons.volume_off_rounded,
+            ),
+            tooltip: musicState.isMusicEnabled ? 'Turn off music' : 'Turn on music',
+            onPressed: () async {
+              await ref.read(musicProvider.notifier).toggleMusicEnabled();
+              
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      musicState.isMusicEnabled
+                          ? 'Music disabled'
+                          : 'Music enabled',
+                    ),
+                    duration: const Duration(seconds: 2),
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+              }
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.settings_outlined),
             onPressed: () {
