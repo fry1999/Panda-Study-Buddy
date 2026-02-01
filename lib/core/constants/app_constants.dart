@@ -38,7 +38,7 @@ class AppConstants {
   // Music settings
   static const String focusMusicPath = 'assets/sounds/focus_music.mp3';
   static const String musicEnabledKey = 'music_enabled';
-  static const double defaultMusicVolume = 0.5;
+  static const double defaultMusicVolume = 1;
 }
 
 /// Session types
